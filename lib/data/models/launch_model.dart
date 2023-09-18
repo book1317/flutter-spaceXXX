@@ -66,43 +66,43 @@ class PageDetail extends Equatable {
   List<Object> get props => [page, totalPages, hasNextPage];
 }
 
-class Filter extends Equatable {
-  final String name;
-  final int page;
-  final int limit;
+// class Filter extends Equatable {
+//   final String name;
+//   final int page;
+//   final int limit;
 
-  const Filter({
-    required this.name,
-    required this.page,
-    required this.limit,
-  });
+//   const Filter({
+//     required this.name,
+//     required this.page,
+//     required this.limit,
+//   });
 
-  Filter.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
-        page = json['page'],
-        limit = json['limit'];
+//   Filter.fromJson(Map<String, dynamic> json)
+//       : name = json['name'],
+//         page = json['page'],
+//         limit = json['limit'];
 
-  @override
-  List<Object> get props => [
-        name,
-        page,
-        limit,
-      ];
-}
+//   @override
+//   List<Object> get props => [
+//         name,
+//         page,
+//         limit,
+//       ];
+// }
 
-class Sorter extends Equatable {
-  final Map<String, String> sorter;
+// class Sorter extends Equatable {
+//   final Map<String, String> sorter;
 
-  const Sorter(
-    this.sorter,
-  );
+//   const Sorter(
+//     this.sorter,
+//   );
 
-  Map<String, dynamic> toMap() {
-    return sorter;
-  }
+//   Map<String, dynamic> toMap() {
+//     return sorter;
+//   }
 
-  @override
-  List<Object> get props => [
-        sorter,
-      ];
-}
+//   @override
+//   List<Object> get props => [
+//         sorter,
+//       ];
+// }

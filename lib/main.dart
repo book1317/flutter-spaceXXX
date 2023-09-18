@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spaceXXX/logic/utility/app_bloc_observer.dart';
-import 'package:spaceXXX/routes.dart';
+import 'package:space_xxx/logic/utility/app_bloc_observer.dart';
+import 'package:space_xxx/logic/utility/locator.dart';
+import 'package:space_xxx/routes.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = AppBlocObserver();
+  setupLocator();
 
   runApp(MyApp(
     appRouter: AppRouter(),
@@ -22,10 +25,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
           brightness: Brightness.dark,
-          scaffoldBackgroundColor: const Color(0xFF000000)),
+          scaffoldBackgroundColor: Colors.transparent),
       onGenerateRoute: appRouter.onGenerateRoute,
     );
   }

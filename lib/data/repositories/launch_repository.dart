@@ -1,34 +1,19 @@
-import 'package:spaceXXX/constants/enums.dart';
-import 'package:spaceXXX/data/models/launch_model.dart';
+import 'package:space_xxx/constants/sort_order.dart';
+import 'package:space_xxx/data/models/launch_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
 
 class LaunchRepository {
-  Future<LaunchDetail> getlaunchesList(Filter filter, Sorter sorter) async {
+  Future<LaunchDetail> getlaunchesList(FetchDetail fetchDetail) async {
     const url = 'https://api.spacexdata.com/v5/launches/query';
-    Map<String, dynamic> body = {
-      "options": {
-        "page": filter.page
-            as dynamic, // on add sort engine assume options type value type int
-        "limit": filter.limit,
-      },
-    };
 
-    if (filter.name != '') {
-      body["query"] = {
-        "name": {"\$regex": filter.name}
-      };
-    }
-
-    final sorterMap = sorter.toMap();
-    final key = sorterMap.keys.toList().first;
-    final value = sorterMap[key];
-    if (value != SorterOrder.none) {
-      body["options"]["sort"] = {key: value};
-    }
-
-    Response response = await post(Uri.parse(url),
-        headers: {"Content-Type": "application/json"}, body: json.encode(body));
+    Response response = await post(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(
+        fetchDetail.toMap(),
+      ),
+    );
 
     if (response.statusCode == 200) {
       final result = jsonDecode(response.body);
@@ -43,35 +28,69 @@ class LaunchRepository {
   }
 }
 
-// class FetchDetail {
-//   final int page;
-//   final int limit;
-//   final Sorter sorter;
-//   final String query;
+class FetchDetail {
+  final int page;
+  final int limit;
+  final String? query;
+  final Sorter sorter;
 
-//   const FetchDetail({
-//     required this.page,
-//     required this.limit,
-//     required this.sorter,
-//     required this.query,
-//   });
+  const FetchDetail({
+    required this.page,
+    required this.limit,
+    this.query,
+    required this.sorter,
+  });
 
-//   Map<String, dynamic> toMap() {
-//     return {
-//       "options": {"page": page, "limit": limit, "sort": sorter},
-//       "query": {
-//         "name": {"\$regex": query}
-//       }
-//     };
-//   }
-// }
+  FetchDetail copyWith({
+    final int? page,
+    final int? limit,
+    final String? query,
+    final Sorter? sorter,
+  }) {
+    return FetchDetail(
+      page: page ?? this.page,
+      limit: limit ?? this.limit,
+      query: query ?? this.query,
+      sorter: sorter ?? this.sorter,
+    );
+  }
 
-// class Sorter {
-//   final String key;
-//   final String sortOrder;
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> data = {
+      "options": {
+        "page": page,
+        "limit": limit as dynamic,
+      },
+    };
 
-//   const Sorter({
-//     required this.key,
-//     required this.sortOrder,
-//   });
-// }
+    if (query != null && query != '') {
+      data['query'] = {
+        "name": {
+          "\$regex": query,
+        }
+      };
+    }
+
+    if (sorter.sortOrder != SorterOrder.none) {
+      data['options']['sort'] = {
+        sorter.key: sorter.sortOrder,
+      };
+    }
+
+    return data;
+  }
+}
+
+class Sorter {
+  final String key;
+  final String sortOrder;
+
+  const Sorter({
+    required this.key,
+    required this.sortOrder,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {key: sortOrder};
+  }
+}

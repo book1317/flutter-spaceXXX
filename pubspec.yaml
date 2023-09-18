@@ -1,4 +1,4 @@
-name: spaceXXX
+name: space_xxx
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -31,14 +31,22 @@ dependencies:
   bloc_test: ^9.1.2
   connectivity_plus: ^3.0.6
   cupertino_icons: ^1.0.2
+  dio: ^5.2.0+1
   equatable: ^2.0.5
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.3
+  get_it: ^7.6.0
+  golden_toolkit: ^0.15.0
   http: ^0.13.6
   hydrated_bloc: ^9.1.1
   intl: ^0.18.1
+  mocktail: ^0.3.0
+  mocktail_image_network: ^0.3.1
   path_provider: ^2.0.15
+  pretty_dio_logger: ^1.3.1
+  shared_preferences: ^2.1.1
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_lints: ^2.0.0

@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:spaceXXX/data/models/launch_model.dart';
-import 'package:spaceXXX/data/repositories/launch_repository.dart';
+import 'package:space_xxx/data/models/launch_model.dart';
+import 'package:space_xxx/data/repositories/launch_repository.dart';
 
 part 'event.dart';
 part 'state.dart';
@@ -12,7 +12,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc(this._launchRepository) : super(HomeState()) {
     on<FetchLaunches>(_onFetchLaunches);
     on<FetchLaunchesMore>(_onFetchMoreLaunches);
-    // on<ToggleSortOrder>(_onToggleSortOrder);
   }
   _onFetchLaunches(
     FetchLaunches event,
@@ -21,13 +20,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(HomeLoadingState());
     try {
       final launchDetail =
-          await _launchRepository.getlaunchesList(event.filter, event.sorter);
+          await _launchRepository.getlaunchesList(event.fetchDetail);
 
       emit(HomeLoadedState(
         isLoadingMore: false,
         launches: launchDetail.launchs,
         hasNextPage: launchDetail.pageDetail.hasNextPage,
-        filter: event.filter,
       ));
     } catch (e) {
       emit(HomeErrorState(e.toString()));
@@ -40,42 +38,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     try {
       if (state is HomeLoadedState) {
-        emit((state as HomeLoadedState).copyWith(isLoadingMore: true));
+        HomeLoadedState homeLoadedState = (state as HomeLoadedState);
+        emit(homeLoadedState.copyWith(isLoadingMore: true));
 
         final launchDetail =
-            await _launchRepository.getlaunchesList(event.filter, event.sorter);
+            await _launchRepository.getlaunchesList(event.fetchDetail);
 
-        emit((state as HomeLoadedState).copyWith(
+        emit(homeLoadedState.copyWith(
           isLoadingMore: false,
-          launches: launchDetail.launchs,
+          launches: homeLoadedState.launches..addAll(launchDetail.launchs),
           hasNextPage: launchDetail.pageDetail.hasNextPage,
-          filter: event.filter,
         ));
       }
     } catch (e) {
       emit(HomeErrorState(e.toString()));
     }
   }
-
-  // _onToggleSortOrder(
-  //   ToggleSortOrder event,
-  //   Emitter<HomeState> emit,
-  // ) async {
-  //   try {
-  //     if (state is HomeLoadedState) {
-  //       Map<String, dynamic> mapSorter =
-  //           (state as HomeLoadedState).sorter.toMap();
-  //       mapSorter[event.key] = mapSorter[event.key] == SorterOrder.asc
-  //           ? SorterOrder.desc
-  //           : SorterOrder.asc;
-  //       Sorter newSort = Sorter.fromJson(mapSorter);
-
-  //       emit((state as HomeLoadedState).copyWith(
-  //         sorter: newSort,
-  //       ));
-  //     }
-  //   } catch (e) {
-  //     emit(HomeErrorState(e.toString()));
-  //   }
-  // }
 }

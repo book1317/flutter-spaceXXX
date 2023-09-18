@@ -8,21 +8,18 @@ abstract class HomeEvent extends Equatable {
 }
 
 class FetchLaunches extends HomeEvent {
-  final Filter filter;
-  final Sorter sorter;
+  final FetchDetail fetchDetail;
 
   const FetchLaunches(
-    this.filter,
-    this.sorter,
+    this.fetchDetail,
   );
 }
 
 class FetchLaunchesMore extends HomeEvent {
   final List<Launch> launches;
-  final Filter filter;
-  final Sorter sorter;
+  final FetchDetail fetchDetail;
 
-  const FetchLaunchesMore(this.launches, this.filter, this.sorter);
+  const FetchLaunchesMore(this.launches, this.fetchDetail);
 }
 
 class ToggleSortOrder extends HomeEvent {

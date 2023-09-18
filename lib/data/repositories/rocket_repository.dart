@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart';
-import 'package:spaceXXX/data/models/rocket_model.dart';
+import 'package:space_xxx/data/models/rocket_model.dart';
 
 class RocketRepository {
   Future<Rocket> getRocketById(String rocketId) async {

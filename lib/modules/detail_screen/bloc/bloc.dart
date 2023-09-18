@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:spaceXXX/data/models/launchpad_model.dart';
-import 'package:spaceXXX/data/models/rocket_model.dart';
-import 'package:spaceXXX/data/repositories/launchpad_repository.dart';
-import 'package:spaceXXX/data/repositories/rocket_repository.dart';
+import 'package:space_xxx/data/models/launchpad_model.dart';
+import 'package:space_xxx/data/models/rocket_model.dart';
+import 'package:space_xxx/data/repositories/launchpad_repository.dart';
+import 'package:space_xxx/data/repositories/rocket_repository.dart';
 
 part 'event.dart';
 part 'state.dart';

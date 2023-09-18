@@ -51,3 +51,4 @@ signing.properties
 .firebase
 
 /lib/app.widgetbook.dart
+**/failures/*.png

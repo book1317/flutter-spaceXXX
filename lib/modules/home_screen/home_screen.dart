@@ -1,19 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spaceXXX/constants/enums.dart';
-import 'package:spaceXXX/data/models/launch_model.dart';
-import 'package:spaceXXX/logic/utility/dateTime.dart';
-import 'package:spaceXXX/modules/home_screen/bloc/bloc.dart';
-import 'package:spaceXXX/modules/home_screen/widget/drawer_sorter.dart';
-import 'package:spaceXXX/routes.dart';
+import 'package:space_xxx/constants/sort_order.dart';
+import 'package:space_xxx/data/models/launch_model.dart';
+import 'package:space_xxx/data/repositories/launch_repository.dart';
+import 'package:space_xxx/modules/home_screen/bloc/bloc.dart';
+import 'package:space_xxx/modules/home_screen/widget/drawer_sorter.dart';
+import 'package:space_xxx/modules/home_screen/widget/launch_item.dart';
+import 'package:space_xxx/routes.dart';
 import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
-    required this.title,
   });
-  final String title;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,37 +22,41 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Timer? _debounce;
-  Sorter sorter = const Sorter({'name': SorterOrder.none});
-  String query = '';
+  FetchDetail fetchDetail = const FetchDetail(
+      page: 1,
+      limit: 10,
+      query: '',
+      sorter: Sorter(key: 'name', sortOrder: SorterOrder.none));
+  bool isLoadingMore = false;
 
   @override
   void initState() {
-    context.read<HomeBloc>().add(const FetchLaunches(
-          Filter(name: '', page: 1, limit: 10),
-          Sorter({'name': SorterOrder.none}),
-        ));
+    context.read<HomeBloc>().add(FetchLaunches(fetchDetail));
     super.initState();
   }
 
-  _loadMore(launches, filter) {
-    context.read<HomeBloc>().add(FetchLaunchesMore(launches, filter, sorter));
+  _loadMore(launches, filter) async {
+    fetchDetail = fetchDetail.copyWith(page: fetchDetail.page + 1);
+    context.read<HomeBloc>().add(FetchLaunchesMore(launches, fetchDetail));
+    await Future.delayed(Duration.zero);
+    isLoadingMore = false;
   }
 
   _onSearchChanged(String query) {
+    print('query ${query}');
+    print('query.length:${query.length}');
+    print('query.characters.length:${query.characters.length}');
+    print('query.runes.length:${query.runes.length}');
+    print('utf8.encode(query).length:${utf8.encode(query).length}');
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      context.read<HomeBloc>().add(FetchLaunches(
-            Filter(name: query, page: 1, limit: 10),
-            sorter,
-          ));
-      setState(() {
-        this.query = query;
-      });
+    _debounce = Timer(const Duration(milliseconds: 2000), () {
+      fetchDetail = fetchDetail.copyWith(query: query, page: 1);
+      context.read<HomeBloc>().add(FetchLaunches(fetchDetail));
     });
   }
 
   _onToggleSortOrder(String key) {
-    Map<String, dynamic> mapSorter = sorter.toMap();
+    Map<String, dynamic>? mapSorter = fetchDetail.sorter.toMap();
     String newSortOrder = SorterOrder.none;
 
     switch (mapSorter[key]) {
@@ -66,26 +71,31 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
     }
 
+    FetchDetail newFetchDetail = fetchDetail.copyWith(
+      page: 1,
+      sorter: Sorter(
+        key: key,
+        sortOrder: newSortOrder,
+      ),
+    );
     setState(() {
-      sorter = Sorter({key: newSortOrder});
+      fetchDetail = newFetchDetail;
     });
-
-    context.read<HomeBloc>().add(FetchLaunches(
-          Filter(name: query, page: 1, limit: 100),
-          sorter,
-        ));
+    context.read<HomeBloc>().add(FetchLaunches(newFetchDetail));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.title),
-          actions: <Widget>[Container()] // for hide EndDrawer icon
-          ),
+        title: const Text('Launches'),
+        actions: <Widget>[Container()], // for hide EndDrawer icon
+        backgroundColor: const Color(0x44000000),
+        elevation: 0,
+      ),
       body: Builder(builder: (context) {
         return Container(
-            padding: const EdgeInsets.all(32.0),
+            padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 32.0),
             child: Column(
               children: [
                 Row(
@@ -96,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 16),
                         child: TextField(
+                          maxLength: 5,
                           onChanged: _onSearchChanged,
                           decoration: const InputDecoration(
                             enabledBorder: OutlineInputBorder(
@@ -135,11 +146,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         onNotification: (ScrollNotification scrollInfo) {
                           if (scrollInfo.metrics.pixels ==
                                   scrollInfo.metrics.maxScrollExtent &&
-                              state.hasNextPage) {
-                            // _loadMore(
-                            //   launches,
-                            //   state.filter,
-                            // );
+                              state.hasNextPage &&
+                              !isLoadingMore) {
+                            isLoadingMore = true;
+                            _loadMore(
+                              launches,
+                              fetchDetail,
+                            );
                           }
                           return false;
                         },
@@ -147,8 +160,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Expanded(
                               child: ListView.builder(
-                                  // shrinkWrap: true,
-                                  // physics: const NeverScrollableScrollPhysics(),
                                   itemCount: launches.length,
                                   itemBuilder: (_, index) {
                                     return GestureDetector(
@@ -162,59 +173,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                             color:
                                                 Theme.of(context).primaryColor,
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 4,
-                                                      horizontal: 8),
-                                              child: ListTile(
-                                                  title: Text(
-                                                    launches[index].name,
-                                                    style: const TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  subtitle: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        convertUtcStringToFormatDate(
-                                                            launches[index]
-                                                                .launchedDate),
-                                                        style: const TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                      Text(
-                                                        launches[index].success
-                                                            ? 'success'
-                                                            : 'fail',
-                                                        style: const TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  trailing:
-                                                      Text('#${index + 1}'),
-                                                  leading: CircleAvatar(
-                                                    backgroundImage:
-                                                        NetworkImage(
-                                                            launches[index]
-                                                                .image),
-                                                  )),
-                                            )),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10,
+                                                        horizontal: 8),
+                                                child: LaunchItem(
+                                                  index: index + 1,
+                                                  name: launches[index].name,
+                                                  launchedDate: launches[index]
+                                                      .launchedDate,
+                                                  success:
+                                                      launches[index].success,
+                                                  image: launches[index].image,
+                                                ))),
                                       ),
                                     );
                                   }),
                             ),
                             Visibility(
-                              visible: state.isLoadingMore == true,
+                              visible: state.isLoadingMore,
                               child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  height: 35,
-                                  width: 35,
-                                  child: const CircularProgressIndicator()),
+                                padding: const EdgeInsets.all(5),
+                                height: 35,
+                                width: 35,
+                                child: const CircularProgressIndicator(),
+                              ),
                             )
                           ],
                         ),
@@ -226,12 +209,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ));
       }),
-      endDrawer: Builder(builder: (context) {
-        return DrawerSorter(
-          sorter: sorter,
-          onToggleSortOrder: _onToggleSortOrder,
-        );
-      }),
+      endDrawer: DrawerSorter(
+        sorter: fetchDetail.sorter,
+        onToggleSortOrder: _onToggleSortOrder,
+      ),
     );
   }
 

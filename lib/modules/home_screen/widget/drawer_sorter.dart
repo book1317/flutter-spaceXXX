@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spaceXXX/constants/enums.dart';
-import 'package:spaceXXX/data/models/launch_model.dart';
+import 'package:space_xxx/constants/sort_order.dart';
+import 'package:space_xxx/data/repositories/launch_repository.dart';
 
 class DrawerSorter extends StatelessWidget {
   final Sorter sorter;
@@ -32,7 +32,6 @@ class DrawerSorter extends StatelessWidget {
         color: Colors.black,
         child: Center(
           child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
