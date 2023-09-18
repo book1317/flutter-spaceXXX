@@ -149,10 +149,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: b99b1d56dc0d5dece70957023af002dbd49614b4a1bf86d3a254af3fe781bdf2
+      sha256: ce75a1b40947fea0a0e16ce73337122a86762e38b982e1ccb909daa3b9bc4197
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.0+1"
+    version: "5.3.2"
   equatable:
     dependency: "direct main"
     description:
@@ -260,10 +260,18 @@ packages:
     dependency: "direct main"
     description:
       name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.6"
+    version: "1.1.0"
+  http_certificate_pinning:
+    dependency: "direct main"
+    description:
+      name: http_certificate_pinning
+      sha256: db9f83c5cac380768721e44b937ffa8cc9770a4d0bfad7ab281b4295333d8036
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   http_multi_server:
     dependency: transitive
     description:
@@ -670,7 +678,7 @@ packages:
     source: hosted
     version: "1.2.0"
   synchronized:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: synchronized
       sha256: "5fcbd27688af6082f5abd611af56ee575342c30e87541d0245f7ff99faa02c60"

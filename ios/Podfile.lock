@@ -1,8 +1,14 @@
 PODS:
+  - Alamofire (4.9.1)
   - connectivity_plus (0.0.1):
     - Flutter
     - ReachabilitySwift
+  - CryptoSwift (1.7.1)
   - Flutter (1.0.0)
+  - http_certificate_pinning (1.0.3):
+    - Alamofire (~> 4.7)
+    - CryptoSwift
+    - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -14,11 +20,14 @@ PODS:
 DEPENDENCIES:
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - Flutter (from `Flutter`)
+  - http_certificate_pinning (from `.symlinks/plugins/http_certificate_pinning/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
 
 SPEC REPOS:
   trunk:
+    - Alamofire
+    - CryptoSwift
     - ReachabilitySwift
 
 EXTERNAL SOURCES:
@@ -26,14 +35,19 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/connectivity_plus/ios"
   Flutter:
     :path: Flutter
+  http_certificate_pinning:
+    :path: ".symlinks/plugins/http_certificate_pinning/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
+  CryptoSwift: d3d18dc357932f7e6d580689e065cf1f176007c1
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  http_certificate_pinning: 23157eae20c5887e49372b3cbe7a1d5863eb9bad
   path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   shared_preferences_foundation: e2dae3258e06f44cc55f49d42024fd8dd03c590c

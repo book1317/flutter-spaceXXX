@@ -1,9 +1,14 @@
 import 'package:space_xxx/constants/sort_order.dart';
+import 'package:space_xxx/core/network/mj_network.dart';
 import 'package:space_xxx/data/models/launch_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
 
 class LaunchRepository {
+  final Network _apiClient;
+
+  LaunchRepository(this._apiClient);
+
   Future<LaunchDetail> getlaunchesList(FetchDetail fetchDetail) async {
     const url = 'https://api.spacexdata.com/v5/launches/query';
 
